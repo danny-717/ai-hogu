@@ -1745,7 +1745,8 @@ export const dungeons: Dungeon[] = [
           {
             id: '4-2-6',
             difficulty: 'medium',
-            scenario: '시험 직전, 외운 공식이 헷갈려. AI에게 빠르게 도움받으려면?',
+            scenario: '시험 직전, 외운 공식이 헷갈려.',
+            question: 'AI에게 빠르게 도움받으려면?',
             options: [
               '"공식 알려줘" 한 줄만',
               '"○○ 공식을 ① 형태 ② 언제 쓰는지 ③ 예제 1개. 1분 안에 이해할 수 있게"',
