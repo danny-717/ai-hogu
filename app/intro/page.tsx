@@ -12,14 +12,12 @@ export default function IntroPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    // 로그인 상태 미리 확인
     async function checkAuth() {
       const { data: { session } } = await supabase.auth.getSession()
       setIsLoggedIn(!!session)
     }
     checkAuth()
 
-    // 시퀀스 타이밍
     const t1 = setTimeout(() => setShowShip(true), 800)
     const t2 = setTimeout(() => setShowTitle(true), 1800)
     const t3 = setTimeout(() => setShowButton(true), 3000)
@@ -86,6 +84,28 @@ export default function IntroPage() {
         ))}
       </div>
 
+      {/* SOS 팻말 (왼쪽 상단, 삐딱) */}
+      <div className="absolute top-4 left-2 z-30 sos-tag">
+        <div 
+          className="px-4 py-2 rounded-lg border-4 shadow-2xl"
+          style={{
+            background: 'linear-gradient(to bottom, #ef4444, #991b1b)',
+            borderColor: '#450a0a',
+            boxShadow: '3px 4px 0 rgba(0,0,0,0.5)',
+          }}
+        >
+          <p className="text-sm text-yellow-100 font-black tracking-wider whitespace-nowrap" style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
+            🚨 청소년 SOS
+          </p>
+          <p className="text-[10px] text-yellow-200 font-bold text-center whitespace-nowrap">
+            생명안전 프로젝트
+          </p>
+        </div>
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-xl">
+          📌
+        </div>
+      </div>
+
       {/* 달 */}
       <div className="absolute top-12 right-12 text-6xl moon-glow opacity-80">
         🌙
@@ -100,11 +120,9 @@ export default function IntroPage() {
             showShip ? 'ship-sail opacity-100' : 'opacity-0 -translate-x-96'
           }`}
         >
-          {/* 깃발 (위에 휘날림) */}
           <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-4xl flag-wave">
             🏴‍☠️
           </div>
-          {/* 배 */}
           <div className="text-8xl">
             ⛵
           </div>
@@ -116,22 +134,22 @@ export default function IntroPage() {
             showTitle ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
           }`}
         >
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <span className="text-3xl anchor-swing">⚓</span>
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
+            <span className="text-2xl sm:text-3xl anchor-swing">⚓</span>
             <h1 
-              className="text-5xl font-black"
+              className="text-3xl sm:text-5xl font-black whitespace-nowrap"
               style={{ 
                 color: '#fbbf24',
                 textShadow: '3px 3px 0 #5c3a17, 6px 6px 12px rgba(0,0,0,0.5)',
-                letterSpacing: '2px',
+                letterSpacing: '1px',
               }}
             >
               AI 호구탈출
             </h1>
-            <span className="text-3xl anchor-swing" style={{ animationDelay: '0.3s' }}>⚓</span>
+            <span className="text-2xl sm:text-3xl anchor-swing" style={{ animationDelay: '0.3s' }}>⚓</span>
           </div>
           <p 
-            className="text-amber-100 text-lg font-bold italic mt-3"
+            className="text-amber-100 text-base sm:text-lg font-bold italic mt-3"
             style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
           >
             "보물섬을 항해하는 해적들의 모험"
@@ -141,7 +159,7 @@ export default function IntroPage() {
 
       {/* 모험 시작 버튼 */}
       {showButton && (
-        <div className="absolute bottom-40 left-0 right-0 flex justify-center">
+        <div className="absolute bottom-40 left-0 right-0 flex justify-center z-30">
           <button
             onClick={handleStart}
             className="button-burst px-10 py-4 rounded-2xl font-black text-xl border-4 shadow-2xl active:scale-95"
@@ -159,22 +177,18 @@ export default function IntroPage() {
 
       {/* 파도 (하단) - 3겹 레이어 */}
       <div className="absolute bottom-0 left-0 right-0 h-40 overflow-hidden pointer-events-none">
-        {/* 바다 배경 */}
         <div 
           className="absolute inset-0"
           style={{
             background: 'linear-gradient(180deg, transparent 0%, #1e3a5f 30%, #0f2942 100%)',
           }}
         ></div>
-        {/* 뒤 파도 (어두움) */}
         <div className="absolute bottom-8 left-0 right-0 text-3xl opacity-40 wave-back whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
-        {/* 중간 파도 */}
         <div className="absolute bottom-3 left-0 right-0 text-4xl opacity-70 wave-mid whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
-        {/* 앞 파도 (밝음) */}
         <div className="absolute -bottom-1 left-0 right-0 text-5xl opacity-90 wave-front whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
@@ -183,7 +197,7 @@ export default function IntroPage() {
       {/* 건너뛰기 버튼 (오른쪽 위) */}
       <button
         onClick={handleStart}
-        className="absolute top-6 right-6 text-amber-200 text-xs font-bold opacity-60 hover:opacity-100 z-20"
+        className="absolute top-6 right-6 text-amber-200 text-xs font-bold opacity-60 hover:opacity-100 z-30"
       >
         건너뛰기 →
       </button>
@@ -282,6 +296,13 @@ export default function IntroPage() {
         }
         .flag-wave {
           animation: flag-wave 1s ease-in-out infinite;
+        }
+        @keyframes sos-tag {
+          0%, 100% { transform: rotate(-12deg) translateY(0); }
+          50% { transform: rotate(-10deg) translateY(-2px); }
+        }
+        .sos-tag {
+          animation: sos-tag 2s ease-in-out infinite;
         }
         .wave-front {
           animation: wave-front 2.5s ease-in-out infinite;
