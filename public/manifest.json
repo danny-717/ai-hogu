@@ -1,0 +1,26 @@
+{
+  "name": "AI 호구탈출",
+  "short_name": "AI호구탈출",
+  "description": "AI 시대를 항해하는 해적의 모험 - AI 리터러시 학습 게임",
+  "start_url": "/map",
+  "display": "standalone",
+  "background_color": "#3d2817",
+  "theme_color": "#3d2817",
+  "orientation": "portrait",
+  "lang": "ko",
+  "categories": ["education", "games"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

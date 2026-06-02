@@ -2,200 +2,280 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { getStage, getDungeon } from '@/data/quizData'
+import { getStage } from '@/data/quizData'
 
 function ResultContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
   const stageId = searchParams.get('stage') || ''
-  const correctCount = parseInt(searchParams.get('correct') || '0')
-  const totalCount = parseInt(searchParams.get('total') || '1')
+  const correct = parseInt(searchParams.get('correct') || '0')
+  const total = parseInt(searchParams.get('total') || '1')
   const stars = parseInt(searchParams.get('stars') || '0')
-  
+  const bonus = parseInt(searchParams.get('bonus') || '0')
+
   const stageInfo = getStage(stageId)
-  
   const [showStars, setShowStars] = useState(0)
+  const [showBonus, setShowBonus] = useState(false)
+  const [showButtons, setShowButtons] = useState(false)
 
   useEffect(() => {
-    if (stars > 0) {
-      const timer1 = setTimeout(() => setShowStars(1), 500)
-      const timer2 = setTimeout(() => setShowStars(2), 1000)
-      const timer3 = setTimeout(() => setShowStars(3), 1500)
-      return () => {
-        clearTimeout(timer1)
-        clearTimeout(timer2)
-        clearTimeout(timer3)
-      }
+    // 별 1개씩 순차적으로 보여주기
+    const timers: NodeJS.Timeout[] = []
+    for (let i = 1; i <= stars; i++) {
+      timers.push(
+        setTimeout(() => setShowStars(i), 600 + i * 400)
+      )
     }
+    // 보너스 점수 표시
+    timers.push(
+      setTimeout(() => setShowBonus(true), 600 + (stars + 1) * 400)
+    )
+    // 버튼 표시
+    timers.push(
+      setTimeout(() => setShowButtons(true), 600 + (stars + 2) * 400)
+    )
+    
+    return () => timers.forEach(t => clearTimeout(t))
   }, [stars])
 
   if (!stageInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">정보를 찾을 수 없어</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#3d2817' }}>
+        <button
+          onClick={() => router.push('/map')}
+          className="px-4 py-2 bg-amber-700 text-yellow-100 rounded-lg font-bold"
+        >
+          지도로 돌아가기
+        </button>
       </div>
     )
   }
 
   const { dungeon, stage } = stageInfo
-  const accuracy = Math.round((correctCount / totalCount) * 100)
-  
-  const currentStageIndex = dungeon.stages.findIndex(s => s.id === stage.id)
-  const nextStage = dungeon.stages[currentStageIndex + 1]
-  const isDungeonComplete = currentStageIndex === dungeon.stages.length - 1
-  const nextDungeon = getDungeon(dungeon.id + 1)
+  const accuracy = Math.round((correct / total) * 100)
+  const baseScore = stars * (stage.isBoss ? 20 : 10)
+  const totalScore = Math.max(0, baseScore + bonus)
 
-  let titleMessage = ''
-  let emoji = ''
-  let messageColor = ''
+  // 메시지
+  let title = ''
+  let message = ''
+  let bigEmoji = '⚓'
   
   if (stars === 3) {
-    titleMessage = '완벽해!'
-    emoji = '🏆'
-    messageColor = 'text-amber-500'
+    title = '완벽한 항해!'
+    message = '이 섬의 모든 보물을 찾았다!'
+    bigEmoji = '👑'
   } else if (stars === 2) {
-    titleMessage = '잘했어!'
-    emoji = '🎉'
-    messageColor = 'text-green-500'
+    title = '대단해!'
+    message = '거의 다 왔어. 다시 도전해서 완벽 클리어!'
+    bigEmoji = '🏴‍☠️'
   } else if (stars === 1) {
-    titleMessage = '클리어!'
-    emoji = '👏'
-    messageColor = 'text-blue-500'
+    title = '클리어!'
+    message = '간신히 통과! 다시 도전해서 별 더 모아봐'
+    bigEmoji = '⚓'
   } else {
-    titleMessage = '아쉽다!'
-    emoji = '😅'
-    messageColor = 'text-gray-500'
+    title = '아쉽다...'
+    message = '바다에 빠질 뻔! 다시 도전해보자'
+    bigEmoji = '🌊'
   }
 
-  const earnedScore = stars > 0 
-    ? (stage.isBoss ? stars * 20 : stars * 10)
-    : 0
+  // 다음 스테이지 찾기
+  const currentIdx = dungeon.stages.findIndex(s => s.id === stage.id)
+  const nextStage = currentIdx < dungeon.stages.length - 1 
+    ? dungeon.stages[currentIdx + 1] 
+    : null
+  const canGoNext = stars > 0 && nextStage
+
+  const dungeonTheme = {
+    1: { accent: '#a83a1f' },
+    2: { accent: '#1f4ea8' },
+    3: { accent: '#7b1fa8' },
+    4: { accent: '#1f8a3a' },
+  }[dungeon.id] || { accent: '#a83a1f' }
 
   return (
-    <div className={`min-h-screen ${dungeon.bgColor} flex items-center justify-center p-4`}>
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)' }}
+    >
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 text-center">
-          <div className="text-6xl mb-3">{emoji}</div>
-          <h1 className={`text-3xl font-bold mb-2 ${messageColor}`}>
-            {titleMessage}
-          </h1>
-          <p className="text-sm text-gray-500 mb-6">
-            {stage.title} {stage.isBoss && '👹'}
+        {/* 메인 양피지 카드 */}
+        <div 
+          className="relative rounded-3xl shadow-2xl border-4 border-amber-800 p-6 text-center result-arrive"
+          style={{ 
+            background: 'linear-gradient(to bottom, #f5e1b8 0%, #e8c780 100%)',
+          }}
+        >
+          {/* 모서리 장식 */}
+          <div className="absolute -top-2 -left-2 w-5 h-5 bg-amber-900 rounded-full opacity-40"></div>
+          <div className="absolute -top-2 -right-2 w-5 h-5 bg-amber-900 rounded-full opacity-40"></div>
+          <div className="absolute -bottom-2 -left-2 w-5 h-5 bg-amber-900 rounded-full opacity-40"></div>
+          <div className="absolute -bottom-2 -right-2 w-5 h-5 bg-amber-900 rounded-full opacity-40"></div>
+
+          {/* 상단 라벨 */}
+          <p className="text-[10px] text-amber-700 font-black tracking-widest mb-3">
+            ⚓ ⚓ ⚓
           </p>
 
-          {stars > 0 && (
-            <div className="flex justify-center gap-2 mb-6">
-              {[1, 2, 3].map(s => (
-                <div
-                  key={s}
-                  className={`text-5xl transition-all duration-500 ${
-                    showStars >= s
-                      ? stars >= s
-                        ? 'opacity-100 scale-100'
-                        : 'opacity-30 scale-90'
-                      : 'opacity-0 scale-50'
-                  }`}
-                >
-                  ⭐
-                </div>
-              ))}
-            </div>
-          )}
+          {/* 큰 이모지 */}
+          <div className="text-7xl mb-3 result-emoji">
+            {bigEmoji}
+          </div>
 
-          <div className="bg-gray-50 rounded-2xl p-5 mb-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">정답률</p>
-                <p className="text-2xl font-bold text-gray-800">{accuracy}%</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {correctCount} / {totalCount}
-                </p>
+          {/* 타이틀 */}
+          <h1 className="text-3xl font-black text-amber-900 mb-1">
+            {title}
+          </h1>
+          <p className="text-sm text-amber-800 font-bold italic mb-5">
+            "{message}"
+          </p>
+
+          {/* 별 표시 (큰) */}
+          <div className="flex justify-center gap-3 mb-5">
+            {[1, 2, 3].map(i => (
+              <div
+                key={i}
+                className={`text-6xl transition-all duration-500 ${
+                  showStars >= i ? 'star-pop' : 'opacity-20 scale-50'
+                }`}
+                style={{
+                  filter: showStars >= i 
+                    ? 'drop-shadow(0 0 15px rgba(255, 200, 50, 0.8))' 
+                    : 'grayscale(100%)',
+                }}
+              >
+                ⭐
               </div>
-              <div>
-                <p className="text-xs text-gray-500 mb-1">획득 점수</p>
-                <p className="text-2xl font-bold text-amber-500">
-                  +{earnedScore}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {stage.isBoss ? '보스 ⭐ × 20' : '일반 ⭐ × 10'}
-                </p>
+            ))}
+          </div>
+
+          {/* 점수 박스 */}
+          <div className={`transition-all duration-500 ${
+            showBonus ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}>
+            <div 
+              className="rounded-2xl p-4 mb-3 border-4 shadow-inner"
+              style={{ 
+                background: 'linear-gradient(to bottom, #fffbeb, #fef3c7)',
+                borderColor: '#d97706',
+              }}
+            >
+              {/* 정답률 */}
+              <div className="flex items-center justify-between mb-3 pb-3 border-b-2 border-amber-300 border-dashed">
+                <span className="text-sm font-bold text-amber-900">🎯 정답률</span>
+                <span className="text-xl font-black text-amber-900">
+                  {correct}/{total} ({accuracy}%)
+                </span>
+              </div>
+
+              {/* 기본 점수 */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-amber-800">⭐ 별점 점수</span>
+                <span className="text-base font-black text-amber-900">+{baseScore}</span>
+              </div>
+
+              {/* 보너스 점수 (있을 때만) */}
+              {bonus !== 0 && (
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-amber-800">
+                    {bonus > 0 ? '🎁 보너스' : '💀 페널티'}
+                  </span>
+                  <span className={`text-base font-black ${
+                    bonus > 0 ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {bonus > 0 ? '+' : ''}{bonus}
+                  </span>
+                </div>
+              )}
+
+              {/* 총 점수 */}
+              <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-amber-700">
+                <span className="text-sm font-black text-amber-900">💎 획득 보물</span>
+                <span 
+                  className="text-3xl font-black"
+                  style={{ 
+                    color: '#5c3a17',
+                    textShadow: '2px 2px 0 #fbbf24',
+                  }}
+                >
+                  {totalScore}
+                </span>
               </div>
             </div>
           </div>
 
-          {stars === 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-sm text-amber-800">
-              💪 정답률 50% 이상이어야 클리어돼. 다시 도전해보자!
-            </div>
-          )}
-
-          {stars > 0 && stars < 3 && (
-            <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-6 text-sm text-indigo-700">
-              ⭐ 다시 도전해서 만점에 도전해봐!
-            </div>
-          )}
-
-          {stars === 3 && isDungeonComplete && nextDungeon && (
-            <div className="bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-amber-300 rounded-xl p-4 mb-6">
-              <p className="text-sm font-bold text-amber-800 mb-1">
-                🎊 던전 클리어!
-              </p>
-              <p className="text-xs text-amber-700">
-                다음 던전이 열렸어 → {nextDungeon.emoji} {nextDungeon.title}
-              </p>
-            </div>
-          )}
-
-          {stars === 3 && isDungeonComplete && !nextDungeon && (
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-300 rounded-xl p-4 mb-6">
-              <p className="text-sm font-bold text-purple-800 mb-1">
-                🎓 모든 던전 클리어!
-              </p>
-              <p className="text-xs text-purple-700">
-                축하해! AI 호구탈출 완전 마스터!
-              </p>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            {stars === 0 ? (
-              <button
-                onClick={() => router.push(`/quiz/${stage.id}`)}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors"
-              >
-                🔄 다시 도전!
-              </button>
-            ) : nextStage ? (
+          {/* 버튼들 */}
+          <div className={`space-y-2 transition-all duration-500 ${
+            showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}>
+            {canGoNext && (
               <button
                 onClick={() => router.push(`/quiz/${nextStage.id}`)}
-                className={`w-full text-white font-bold py-3 rounded-xl transition-colors ${
-                  dungeon.id === 1 ? 'bg-red-500 hover:bg-red-600' :
-                  dungeon.id === 2 ? 'bg-blue-500 hover:bg-blue-600' :
-                  dungeon.id === 3 ? 'bg-purple-500 hover:bg-purple-600' :
-                  'bg-green-500 hover:bg-green-600'
-                }`}
+                className="w-full text-yellow-100 font-black text-base py-3 rounded-xl shadow-lg border-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                style={{
+                  background: `linear-gradient(to bottom, ${dungeonTheme.accent}, ${dungeonTheme.accent}dd)`,
+                  borderColor: '#451a03',
+                }}
               >
-                ➡️ 다음 스테이지로
+                ⚔️ 다음 모험으로 →
               </button>
-            ) : null}
-
+            )}
+            
             <button
               onClick={() => router.push(`/dungeon/${dungeon.id}`)}
-              className="w-full bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-bold py-3 rounded-xl transition-colors"
+              className="w-full font-black text-base py-3 rounded-xl shadow-lg border-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              style={{
+                background: 'linear-gradient(to bottom, #fbbf24, #d97706)',
+                color: '#451a03',
+                borderColor: '#451a03',
+              }}
             >
-              🗺️ 던전으로 돌아가기
+              🏝️ 섬으로 돌아가기
             </button>
 
             <button
               onClick={() => router.push('/map')}
-              className="w-full text-gray-500 hover:text-gray-700 text-sm py-2"
+              className="w-full font-bold text-sm py-2.5 rounded-xl border-2 hover:scale-[1.02] transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.5)',
+                color: '#5c3a17',
+                borderColor: '#8b6535',
+              }}
             >
-              모험 지도로
+              🗺️ 모험 지도로
             </button>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes result-arrive {
+          0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .result-arrive {
+          animation: result-arrive 0.6s ease-out;
+        }
+        @keyframes result-emoji {
+          0% { transform: scale(0) rotate(-180deg); }
+          60% { transform: scale(1.2) rotate(10deg); }
+          80% { transform: scale(0.9) rotate(-5deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        .result-emoji {
+          animation: result-emoji 0.8s ease-out;
+          display: inline-block;
+        }
+        @keyframes star-pop {
+          0% { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+          50% { transform: scale(1.4) rotate(10deg); opacity: 1; }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .star-pop {
+          animation: star-pop 0.5s ease-out;
+        }
+      `}</style>
     </div>
   )
 }
@@ -203,8 +283,8 @@ function ResultContent() {
 export default function ResultPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">결과 불러오는 중...</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#3d2817' }}>
+        <div className="text-5xl animate-bounce">⚓</div>
       </div>
     }>
       <ResultContent />
