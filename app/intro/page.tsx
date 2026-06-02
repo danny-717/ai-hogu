@@ -39,12 +39,12 @@ export default function IntroPage() {
 
   return (
     <div 
-      className="fixed inset-0 overflow-hidden flex flex-col items-center justify-center"
+      className="fixed inset-0 overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, #5c3a17 0%, #3d2817 40%, #1a4a5c 100%)',
       }}
     >
-      {/* 별이 반짝이는 하늘 - 고정 위치 */}
+      {/* 별이 반짝이는 하늘 */}
       <div className="absolute inset-0 pointer-events-none">
         {[
           { top: 5, left: 12, size: 10, delay: 0.3, duration: 2.5 },
@@ -84,8 +84,11 @@ export default function IntroPage() {
         ))}
       </div>
 
-      {/* SOS 팻말 (왼쪽 상단, 삐딱) */}
-      <div className="absolute top-4 left-2 z-30 sos-tag">
+      {/* SOS 팻말 */}
+      <div 
+        className="absolute left-2 z-30 sos-tag"
+        style={{ top: '8%' }}
+      >
         <div 
           className="px-4 py-2 rounded-lg border-4 shadow-2xl"
           style={{
@@ -107,23 +110,37 @@ export default function IntroPage() {
       </div>
 
       {/* 달 */}
-      <div className="absolute top-12 right-12 text-6xl moon-glow opacity-80">
+      <div 
+        className="absolute right-8 text-6xl moon-glow opacity-80"
+        style={{ top: '10%' }}
+      >
         🌙
       </div>
 
-      {/* 메인 컨텐츠 */}
-      <div className="relative z-10 flex flex-col items-center justify-center px-6 pb-32">
-        
+      {/* 건너뛰기 버튼 */}
+      <button
+        onClick={handleStart}
+        className="absolute right-8 text-amber-200 text-xs font-bold opacity-60 hover:opacity-100 z-30"
+        style={{ top: '8%' }}
+      >
+        건너뛰기 →
+      </button>
+
+      {/* 메인 콘텐츠 (배 + 타이틀) */}
+      <div 
+        className="absolute left-0 right-0 flex flex-col items-center px-6 z-10"
+        style={{ top: '45%', transform: 'translateY(-50%)' }}
+      >
         {/* 배 등장 */}
         <div 
-          className={`relative mb-4 transition-all duration-1000 ${
+          className={`relative mb-6 transition-all duration-1000 ${
             showShip ? 'ship-sail opacity-100' : 'opacity-0 -translate-x-96'
           }`}
         >
           <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-4xl flag-wave">
             🏴‍☠️
           </div>
-          <div className="text-8xl">
+          <div className="text-7xl">
             ⛵
           </div>
         </div>
@@ -134,8 +151,8 @@ export default function IntroPage() {
             showTitle ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
           }`}
         >
-          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
-            <span className="text-2xl sm:text-3xl anchor-swing">⚓</span>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-2xl anchor-swing">⚓</span>
             <h1 
               className="text-3xl sm:text-5xl font-black whitespace-nowrap"
               style={{ 
@@ -146,10 +163,10 @@ export default function IntroPage() {
             >
               AI 호구탈출
             </h1>
-            <span className="text-2xl sm:text-3xl anchor-swing" style={{ animationDelay: '0.3s' }}>⚓</span>
+            <span className="text-2xl anchor-swing" style={{ animationDelay: '0.3s' }}>⚓</span>
           </div>
           <p 
-            className="text-amber-100 text-base sm:text-lg font-bold italic mt-3"
+            className="text-amber-100 text-sm sm:text-lg font-bold italic mt-3"
             style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
           >
             "보물섬을 항해하는 해적들의 모험"
@@ -159,7 +176,10 @@ export default function IntroPage() {
 
       {/* 모험 시작 버튼 */}
       {showButton && (
-        <div className="absolute bottom-40 left-0 right-0 flex justify-center z-30">
+        <div 
+          className="absolute left-0 right-0 flex justify-center z-30"
+          style={{ bottom: '22%' }}
+        >
           <button
             onClick={handleStart}
             className="button-burst px-10 py-4 rounded-2xl font-black text-xl border-4 shadow-2xl active:scale-95"
@@ -175,32 +195,27 @@ export default function IntroPage() {
         </div>
       )}
 
-      {/* 파도 (하단) - 3겹 레이어 */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 overflow-hidden pointer-events-none">
+      {/* 파도 (하단) - 간격 넓힘 */}
+      <div className="absolute bottom-0 left-0 right-0 h-44 overflow-hidden pointer-events-none">
         <div 
           className="absolute inset-0"
           style={{
             background: 'linear-gradient(180deg, transparent 0%, #1e3a5f 30%, #0f2942 100%)',
           }}
         ></div>
-        <div className="absolute bottom-8 left-0 right-0 text-3xl opacity-40 wave-back whitespace-nowrap">
+        {/* 뒤 파도 (어두움, 위쪽) */}
+        <div className="absolute bottom-14 left-0 right-0 text-3xl opacity-40 wave-back whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
-        <div className="absolute bottom-3 left-0 right-0 text-4xl opacity-70 wave-mid whitespace-nowrap">
+        {/* 중간 파도 */}
+        <div className="absolute bottom-7 left-0 right-0 text-4xl opacity-70 wave-mid whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
+        {/* 앞 파도 (밝음, 가장 아래) */}
         <div className="absolute -bottom-1 left-0 right-0 text-5xl opacity-90 wave-front whitespace-nowrap">
           🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         </div>
       </div>
-
-      {/* 건너뛰기 버튼 (오른쪽 위) */}
-      <button
-        onClick={handleStart}
-        className="absolute top-6 right-6 text-amber-200 text-xs font-bold opacity-60 hover:opacity-100 z-30"
-      >
-        건너뛰기 →
-      </button>
 
       <style jsx>{`
         @keyframes ship-sail {
@@ -216,7 +231,6 @@ export default function IntroPage() {
           0%, 100% { transform: translateY(0) rotate(0deg); }
           50% { transform: translateY(-8px) rotate(3deg); }
         }
-        
         @keyframes anchor-swing {
           0%, 100% { transform: rotate(-10deg); }
           50% { transform: rotate(10deg); }
@@ -225,7 +239,6 @@ export default function IntroPage() {
           animation: anchor-swing 2s ease-in-out infinite;
           display: inline-block;
         }
-        
         @keyframes star-twinkle {
           0%, 100% { opacity: 0.3; transform: scale(1); }
           50% { opacity: 1; transform: scale(1.3); }
@@ -233,38 +246,19 @@ export default function IntroPage() {
         .star-twinkle {
           animation: star-twinkle 2s ease-in-out infinite;
         }
-        
         @keyframes moon-glow {
-          0%, 100% { 
-            filter: drop-shadow(0 0 20px rgba(255, 220, 100, 0.6));
-          }
-          50% { 
-            filter: drop-shadow(0 0 30px rgba(255, 220, 100, 0.9));
-          }
+          0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 220, 100, 0.6)); }
+          50% { filter: drop-shadow(0 0 30px rgba(255, 220, 100, 0.9)); }
         }
         .moon-glow {
           animation: moon-glow 3s ease-in-out infinite;
         }
-        
         @keyframes button-burst {
-          0% { 
-            opacity: 0; 
-            transform: scale(0) rotate(-720deg); 
-          }
-          60% { 
-            opacity: 1; 
-            transform: scale(1.3) rotate(20deg); 
-          }
-          75% {
-            transform: scale(0.9) rotate(-10deg);
-          }
-          85% {
-            transform: scale(1.1) rotate(5deg);
-          }
-          100% { 
-            opacity: 1; 
-            transform: scale(1) rotate(0deg); 
-          }
+          0% { opacity: 0; transform: scale(0) rotate(-720deg); }
+          60% { opacity: 1; transform: scale(1.3) rotate(20deg); }
+          75% { transform: scale(0.9) rotate(-10deg); }
+          85% { transform: scale(1.1) rotate(5deg); }
+          100% { opacity: 1; transform: scale(1) rotate(0deg); }
         }
         @keyframes button-idle {
           0%, 100% { transform: scale(1); }
@@ -273,7 +267,6 @@ export default function IntroPage() {
         .button-burst {
           animation: button-burst 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, button-idle 1.5s ease-in-out infinite 1.2s;
         }
-        
         @keyframes wave-front {
           0%, 100% { transform: translate(0, 0); }
           25% { transform: translate(-15px, -8px); }
@@ -304,15 +297,9 @@ export default function IntroPage() {
         .sos-tag {
           animation: sos-tag 2s ease-in-out infinite;
         }
-        .wave-front {
-          animation: wave-front 2.5s ease-in-out infinite;
-        }
-        .wave-mid {
-          animation: wave-mid 3s ease-in-out infinite;
-        }
-        .wave-back {
-          animation: wave-back 4s ease-in-out infinite;
-        }
+        .wave-front { animation: wave-front 2.5s ease-in-out infinite; }
+        .wave-mid { animation: wave-mid 3s ease-in-out infinite; }
+        .wave-back { animation: wave-back 4s ease-in-out infinite; }
       `}</style>
     </div>
   )
