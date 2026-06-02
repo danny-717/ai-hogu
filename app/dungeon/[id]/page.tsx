@@ -78,10 +78,10 @@ export default function DungeonPage() {
   ).length
 
   const stagePositions = [
-    { x: 25, y: 18, icon: '🏕️', name: '야영지' },
-    { x: 70, y: 35, icon: '🌳', name: '숲' },
-    { x: 28, y: 55, icon: '🌊', name: '폭포' },
-    { x: 65, y: 78, icon: '🏰', name: '동굴' },
+    { x: 30, y: 22, icon: '🏕️', name: '야영지' },
+    { x: 68, y: 38, icon: '🌳', name: '숲' },
+    { x: 32, y: 58, icon: '🌊', name: '폭포' },
+    { x: 65, y: 76, icon: '🏰', name: '동굴' },
   ]
 
   function handleStageClick(stage: Stage, status: ReturnType<typeof getStageStatus>) {
@@ -285,7 +285,7 @@ export default function DungeonPage() {
                   )}
 
                   <div 
-                    className="mt-2 px-2 py-0.5 whitespace-nowrap text-[10px] font-black"
+                    className="mt-2 px-2 py-0.5 text-[10px] font-black leading-tight"
                     style={{
                       background: status.unlocked 
                         ? 'linear-gradient(to bottom, #f5e1b8 0%, #e8c780 100%)'
@@ -294,7 +294,7 @@ export default function DungeonPage() {
                       borderRadius: '2px',
                       boxShadow: '1px 1px 3px rgba(0,0,0,0.3)',
                       color: status.unlocked ? '#5c3a17' : '#555',
-                      maxWidth: '110px',
+                      maxWidth: '90px',
                       textAlign: 'center',
                     }}
                   >

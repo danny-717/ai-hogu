@@ -261,8 +261,7 @@ export default function MapPage() {
                       position: 'absolute',
                     }}
                   >
-                    <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 text-amber-900 text-xs">⊏</span>
-                    <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 text-amber-900 text-xs">⊐</span>
+                    
                     {unlocked ? dungeon.title : '???'}
                   </div>
 
