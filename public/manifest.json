@@ -2,7 +2,7 @@
   "name": "AI 호구탈출",
   "short_name": "AI호구탈출",
   "description": "AI 시대를 항해하는 해적의 모험 - AI 리터러시 학습 게임",
-  "start_url": "/map",
+  "start_url": "/intro",
   "display": "standalone",
   "background_color": "#3d2817",
   "theme_color": "#3d2817",
