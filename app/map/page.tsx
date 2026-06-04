@@ -105,7 +105,7 @@ export default function MapPage() {
       className="min-h-screen pb-12"
       style={{ background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)' }}
     >
-      <div className="max-w-md mx-auto px-3 pt-3">
+      <div className="max-w-md mx-auto px-3 pt-10">
         {/* 상단 헤더 - 양피지 카드 */}
         <div className="relative bg-gradient-to-b from-amber-50 to-amber-100 rounded-2xl shadow-2xl border-4 border-amber-800 p-4 mb-4">
           <div className="absolute -top-1.5 -left-1.5 w-4 h-4 bg-amber-900 rounded-full opacity-30"></div>

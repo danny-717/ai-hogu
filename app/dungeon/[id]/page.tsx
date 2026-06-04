@@ -114,7 +114,7 @@ export default function DungeonPage() {
         <ScrollTransition onComplete={handleTransitionComplete} />
       )}
 
-      <div className="max-w-md mx-auto px-3 pt-3">
+      <div className="max-w-md mx-auto px-3 pt-10">
         {/* 상단 - 뒤로 가기 */}
         <button
           onClick={() => router.push('/map')}
@@ -139,7 +139,7 @@ export default function DungeonPage() {
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-amber-300">
+          <div className="mt-3 pt-10 border-t border-amber-300">
             <div className="flex items-center justify-between text-xs text-amber-800 mb-1 font-bold">
               <span>🗺️ 정복 상황</span>
               <span>{totalCleared} / {dungeon.stages.length}</span>

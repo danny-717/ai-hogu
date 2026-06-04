@@ -120,7 +120,7 @@ export default function LeaderboardPage() {
       className="min-h-screen pb-12 leaderboard-fadein"
       style={{ background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)' }}
     >
-      <div className="max-w-md mx-auto px-3 pt-3">
+      <div className="max-w-md mx-auto px-3 pt-10">
         {/* 뒤로 가기 */}
         <button
           onClick={() => router.push('/map')}
@@ -278,7 +278,7 @@ export default function LeaderboardPage() {
 
             {/* 4위 이하 - 일반 표시 */}
             {currentRankings.length > 3 && (
-              <div className="pt-3 mt-3 border-t-2 border-dashed border-amber-700">
+              <div className="pt-10 mt-3 border-t-2 border-dashed border-amber-700">
                 <p className="text-[10px] text-amber-200 font-bold tracking-widest text-center mb-2">
                   ⚓ 그 외 용감한 해적들 ⚓
                 </p>

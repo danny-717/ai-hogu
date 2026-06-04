@@ -129,7 +129,7 @@ export default function MyPage() {
       className="min-h-screen pb-12 mypage-fadein"
       style={{ background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)' }}
     >
-      <div className="max-w-md mx-auto px-3 pt-3">
+      <div className="max-w-md mx-auto px-3 pt-10">
         {/* 뒤로 가기 */}
         <button
           onClick={() => router.push('/map')}
@@ -174,7 +174,7 @@ export default function MyPage() {
           )}
 
           {/* 총 점수 */}
-          <div className="mt-3 pt-3 border-t-2 border-amber-300 border-dashed">
+          <div className="mt-3 pt-10 border-t-2 border-amber-300 border-dashed">
             <p className="text-xs text-amber-700 font-bold mb-1">💎 총 획득 보물</p>
             <p className="text-3xl font-black text-amber-900" style={{ textShadow: '2px 2px 0 #fbbf24' }}>
               {totalScore} <span className="text-sm">/ 600</span>

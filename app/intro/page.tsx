@@ -151,10 +151,10 @@ export default function IntroPage() {
             showTitle ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
           }`}
         >
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-6 mb-2">
             <span className="text-2xl anchor-swing">⚓</span>
             <h1 
-              className="text-3xl sm:text-5xl font-black whitespace-nowrap"
+              className="text-5xl sm:text-7xl font-black whitespace-nowrap"
               style={{ 
                 color: '#fbbf24',
                 textShadow: '3px 3px 0 #5c3a17, 6px 6px 12px rgba(0,0,0,0.5)',

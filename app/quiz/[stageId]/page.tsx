@@ -243,7 +243,7 @@ export default function QuizPage() {
         <ChestTransition onComplete={finishStage} />
       )}
 
-      <div className="max-w-md mx-auto px-3 pt-3">
+      <div className="max-w-md mx-auto px-3 pt-10">
         {/* 상단 - 나가기 + 진행 */}
         <div className="flex items-center justify-between mb-3">
           <button

@@ -190,7 +190,7 @@ function ResultContent() {
               )}
 
               {/* 총 점수 */}
-              <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-amber-700">
+              <div className="flex items-center justify-between pt-10 mt-2 border-t-2 border-amber-700">
                 <span className="text-sm font-black text-amber-900">💎 획득 보물</span>
                 <span 
                   className="text-3xl font-black"
