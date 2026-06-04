@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getStage, type Question } from '@/data/quizData'
 import { pickQuestionsByDifficulty } from '@/lib/quizPool'
+import ChestTransition from '@/app/components/ChestTransition'
 
 type AnswerRecord = {
   questionId: string
@@ -31,6 +32,7 @@ export default function QuizPage() {
   const [chestResult, setChestResult] = useState<{ points: number; isTrap: boolean } | null>(null)
   const [chestBonus, setChestBonus] = useState(0)
   const [trapBonus, setTrapBonus] = useState(0)
+  const [showFinalTransition, setShowFinalTransition] = useState(false)
 
   useEffect(() => {
     async function checkAuth() {
@@ -160,47 +162,53 @@ export default function QuizPage() {
     }, 2000)
   }
 
-  async function handleNext() {
-    if (isLastQuestion) {
-      const allAnswers = [...answers]
-      const correctCount = allAnswers.filter(a => a.isCorrect).length
-      
-      let stars = 0
-      const accuracy = correctCount / totalQuestions
-      if (accuracy >= 1.0) stars = 3
-      else if (accuracy >= 0.75) stars = 2
-      else if (accuracy >= 0.5) stars = 1
+  // 결과 저장 + 결과 화면 이동 (보물상자 연출이 끝나면 호출됨)
+  async function finishStage() {
+    const allAnswers = [...answers]
+    const correctCount = allAnswers.filter(a => a.isCorrect).length
+    
+    let stars = 0
+    const accuracy = correctCount / totalQuestions
+    if (accuracy >= 1.0) stars = 3
+    else if (accuracy >= 0.75) stars = 2
+    else if (accuracy >= 0.5) stars = 1
 
-      if (userId && stars > 0) {
-        await supabase.from('progress').upsert({
-          user_id: userId,
-          dungeon_id: dungeon.id,
-          stage_id: stage.id,
-          stars: stars,
-          is_boss: stage.isBoss,
-          completed_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,stage_id',
-        })
-
-        const quizRecords = allAnswers.map(a => ({
-          user_id: userId,
-          question_id: a.questionId,
-          dungeon_id: dungeon.id,
-          is_correct: a.isCorrect,
-          selected_answer: String(a.selectedIndex),
-        }))
-        await supabase.from('quiz_results').insert(quizRecords)
-      }
-
-      const resultParams = new URLSearchParams({
-        stage: stage.id,
-        correct: String(correctCount),
-        total: String(totalQuestions),
-        stars: String(stars),
-        bonus: String(comboBonus + chestBonus + trapBonus),
+    if (userId && stars > 0) {
+      await supabase.from('progress').upsert({
+        user_id: userId,
+        dungeon_id: dungeon.id,
+        stage_id: stage.id,
+        stars: stars,
+        is_boss: stage.isBoss,
+        completed_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,stage_id',
       })
-      router.push(`/result?${resultParams.toString()}`)
+
+      const quizRecords = allAnswers.map(a => ({
+        user_id: userId,
+        question_id: a.questionId,
+        dungeon_id: dungeon.id,
+        is_correct: a.isCorrect,
+        selected_answer: String(a.selectedIndex),
+      }))
+      await supabase.from('quiz_results').insert(quizRecords)
+    }
+
+    const resultParams = new URLSearchParams({
+      stage: stage.id,
+      correct: String(correctCount),
+      total: String(totalQuestions),
+      stars: String(stars),
+      bonus: String(comboBonus + chestBonus + trapBonus),
+    })
+    router.push(`/result?${resultParams.toString()}`)
+  }
+
+  function handleNext() {
+    if (isLastQuestion) {
+      // 💎 보물상자 연출 시작 → 끝나면 finishStage() 호출됨
+      setShowFinalTransition(true)
     } else {
       setCurrentIndex(currentIndex + 1)
       setSelectedIndex(null)
@@ -230,6 +238,11 @@ export default function QuizPage() {
         background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)',
       }}
     >
+      {/* 💎 보물상자 트랜지션 (마지막 문제 → 결과) */}
+      {showFinalTransition && (
+        <ChestTransition onComplete={finishStage} />
+      )}
+
       <div className="max-w-md mx-auto px-3 pt-3">
         {/* 상단 - 나가기 + 진행 */}
         <div className="flex items-center justify-between mb-3">
@@ -512,7 +525,8 @@ export default function QuizPage() {
         ) : (
           <button
             onClick={handleNext}
-            className="w-full text-yellow-100 font-black text-lg py-3.5 rounded-xl shadow-lg border-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            disabled={showFinalTransition}
+            className="w-full text-yellow-100 font-black text-lg py-3.5 rounded-xl shadow-lg border-2 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70"
             style={{
               background: `linear-gradient(to bottom, ${dungeonTheme.accent}, ${dungeonTheme.accent}dd)`,
               borderColor: '#451a03',

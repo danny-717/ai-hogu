@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getDungeon, type Stage } from '@/data/quizData'
 import { getUserProgress, type StageProgress } from '@/lib/progress'
+import ScrollTransition from '@/app/components/ScrollTransition'
 
 export default function DungeonPage() {
   const router = useRouter()
@@ -14,6 +15,7 @@ export default function DungeonPage() {
 
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState<StageProgress[]>([])
+  const [transitioningTo, setTransitioningTo] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -28,6 +30,12 @@ export default function DungeonPage() {
     }
     loadData()
   }, [router])
+
+  const handleTransitionComplete = useCallback(() => {
+    if (transitioningTo) {
+      router.push(`/quiz/${transitioningTo}`)
+    }
+  }, [transitioningTo, router])
 
   if (loading) {
     return (
@@ -86,7 +94,7 @@ export default function DungeonPage() {
 
   function handleStageClick(stage: Stage, status: ReturnType<typeof getStageStatus>) {
     if (!status.unlocked) return
-    router.push(`/quiz/${stage.id}`)
+    setTransitioningTo(stage.id)
   }
 
   const dungeonTheme = {
@@ -101,6 +109,11 @@ export default function DungeonPage() {
       className="min-h-screen pb-12 dungeon-fadein"
       style={{ background: 'linear-gradient(135deg, #3d2817 0%, #5c3a17 50%, #3d2817 100%)' }}
     >
+      {/* 📜 양피지 트랜지션 (스테이지 클릭 시) */}
+      {transitioningTo && (
+        <ScrollTransition onComplete={handleTransitionComplete} />
+      )}
+
       <div className="max-w-md mx-auto px-3 pt-3">
         {/* 상단 - 뒤로 가기 */}
         <button
@@ -388,8 +401,8 @@ export default function DungeonPage() {
           50% { transform: translate(-50%, 0) scale(1.1); }
         }
         @keyframes stage-glow {
-          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
         }
       `}</style>
     </div>
